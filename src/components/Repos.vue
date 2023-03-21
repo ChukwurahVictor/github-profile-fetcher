@@ -1,8 +1,12 @@
 <template>
   <div v-if="error">Unable to fetch repositories!</div>
-  <div v-else-if="loading" class="flex justify-center items-center h-screen">
-    <svg class="animate-spin h-5 w-5 mr-3" viewBox="0 0 24 24"></svg>
-    <span>Loading...</span>
+  <div v-else-if="loading">
+    <SpringSpinner
+      :animation-duration="1200"
+      :circles-num="3"
+      :circle-size="15"
+      :color="spinnerColor"
+    />
   </div>
   <div v-else>
     <div class="flex flex-wrap gap-y-8 gap-x-4 md:gap-x-5">
@@ -99,10 +103,20 @@
 <script>
 import { onMounted, ref, computed } from "vue";
 import useFetch from "../composable/useFetch";
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
+import { SpringSpinner } from 'epic-spinners'
 
 export default {
   name: "Repositories",
-  components: {},
+  data() {
+    return {
+      spinnerColor: '#3DED97'
+    }
+  },
+  components: {
+    PulseLoader,
+    SpringSpinner,
+  },
   setup() {
     const { data, error, loading, fetchData } = useFetch(
       "https://api.github.com/users/ChukwurahVictor/repos?sort=updated/contents"
@@ -167,93 +181,3 @@ export default {
   },
 };
 </script>
-<!-- <style scoped>
-.flex-wrap {
-  flex-wrap: wrap;
-}
-
-.repo-item {
-  width: 100%;
-  height: 150px;
-  background-color: #fff;
-  padding: 0.75rem;
-  color: #1f2937;
-  font-weight: 400;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  border-radius: 0.5rem;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 1px 3px 1px rgba(0, 0, 0, 0.05);
-  cursor: pointer;
-  transition: transform 0.2s ease-in-out;
-}
-
-.repo-item:hover {
-  transform: scale(1.01);
-}
-
-.repo-item p {
-  margin: 0;
-}
-
-.repo-item .name {
-  font-size: 1.25rem;
-  font-weight: 500;
-}
-
-.repo-item .description {
-  font-size: 0.875rem;
-  font-weight: 400;
-}
-
-.repo-item .language {
-  font-size: 0.875rem;
-  font-style: italic;
-}
-
-.repo-item .updated-at {
-  font-size: 0.75rem;
-  font-weight: 400;
-  color: #6b7280;
-}
-
-.pagination {
-  margin-top: 1rem;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.pagination p {
-  margin: 0;
-}
-
-.pagination button {
-  border: none;
-  background-color: transparent;
-  cursor: pointer;
-  font-size: 1rem;
-  font-weight: 500;
-  color: #1f2937;
-  margin: 0 0.25rem;
-}
-
-.pagination button:hover {
-  text-decoration: underline;
-}
-
-.pagination button:disabled {
-  /* color: transparent; */
-  cursor: default;
-}
-
-.pagination .page-numbers button {
-  font-weight: 400;
-  font-size: 0.875rem;
-  border: 1px solid white;
-}
-
-.pagination .page-numbers button.current-page {
-  font-weight: 500;
-}
-</style> -->

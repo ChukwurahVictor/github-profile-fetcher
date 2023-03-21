@@ -2,17 +2,24 @@
 import { useRoute } from "vue-router";
 import { onMounted } from "@vue/runtime-core";
 import { ref } from "vue";
+import PulseLoader from 'vue-spinner/src/PulseLoader.vue'
 
 const error = ref(null);
 const loading = ref(false);
 loading.value = true;
 
 const repo = ref({});
+const repoName = ref({});
 const route = useRoute();
 
 const fetchData = async () => {
   try {
     const { repoId } = route.params;
+    const resp = await fetch(`https://api.github.com/repositories/${repoId}`);
+    if (resp.ok) {
+      repoName.value = await resp.json();
+    }
+
     const res = await fetch(
       `https://api.github.com/repositories/${repoId}/contents`
     );
@@ -34,14 +41,32 @@ onMounted(async () => {
 <template>
   <div class="center">
     <div v-if="error">Sorry, cannot fetch this repo at the moment</div>
-    <div v-else-if="loading">loading...</div>
+    <div v-else-if="loading"><PulseLoader :loading="loading"></PulseLoader></div>
     <div v-else>
-      <!-- <div class="flex items-center justify-center border mr-auto">
-        <h2 class="text-3xl mb-3">{{ repo.name }}</h2>
-      </div> -->
+      <div class="flex items-center justify-between m-5">
+        <div class="flex gap-2 items-center h-[50px] mb-5">
+          <div class="flex items-center">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="w-5 h-5 fill-white"
+                viewBox="0 0 16 16"
+              >
+                <path
+                  d="M2 2.5A2.5 2.5 0 0 1 4.5 0h8.75a.75.75 0 0 1 .75.75v12.5a.75.75 0 0 1-.75.75h-2.5a.75.75 0 0 1 0-1.5h1.75v-2h-8a1 1 0 0 0-.714 1.7.75.75 0 1 1-1.072 1.05A2.495 2.495 0 0 1 2 11.5Zm10.5-1h-8a1 1 0 0 0-1 1v6.708A2.486 2.486 0 0 1 4.5 9h8ZM5 12.25a.25.25 0 0 1 .25-.25h3.5a.25.25 0 0 1 .25.25v3.25a.25.25 0 0 1-.4.2l-1.45-1.087a.249.249 0 0 0-.3 0L5.4 15.7a.25.25 0 0 1-.4-.2Z"
+                />
+              </svg>
+            </div>
+          <h2 class="text-lg font-medium text-blue-500">{{ repoName.owner.login }} {{ "/" }} {{ repoName.name }}</h2>
+        </div>
+        <div class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+          <button @click="$router.push(`/`)">
+            Go Back
+          </button>
+        </div>
+      </div>
       <div>
         <div v-if="repo">
-          <ul id="example-1" class="w-[50%] mx-auto">
+          <ul id="example-1" class="w-[75%] md:w-[50%] mx-auto mb-5">
             <li
               v-for="item in repo"
               :key="item.name"
@@ -84,5 +109,3 @@ onMounted(async () => {
     </div>
   </div>
 </template>
-
-<style></style>
