@@ -1,5 +1,8 @@
 # alt-exam
 
+## Live link
+https://reliable-sprite-c8ff10.netlify.app/
+
 ## Project setup
 ```
 yarn install
